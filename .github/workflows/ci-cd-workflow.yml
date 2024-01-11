@@ -23,7 +23,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
       with:
-        images: luiar/lab_dockerhub_deployment
+        images: luiar/second_lab
 
     - name: Build Docker image
       uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
@@ -34,10 +34,11 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
 
     - name: Run Docker container
-      run: docker run -d --name test-container luiar/lab_dockerhub_deployment:${{ steps.meta.outputs.tags }}
+      run: docker run -d --name testcontainer luiar/second_lab:${{ steps.meta.outputs.tags }}
+
 
     - name: Run unit tests in Docker container
-      run: docker exec test-container python -m unittest discover -s tests
+      run: docker exec testcontainer python -m unittest discover -s tests
 
     - name: Push Docker image to DockerHub
       if: success()

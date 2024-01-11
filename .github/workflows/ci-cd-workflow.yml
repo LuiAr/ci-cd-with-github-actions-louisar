@@ -11,46 +11,37 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Log in to Docker Hub
       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        password: ${{ secrets.DOCKER_PASSWORD }} 
 
     - name: Extract metadata (tags, labels) for Docker
       id: meta
       uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
       with:
-        images: luiar/second_lab
+        images: ${{ secrets.DOCKER_USERNAME }}/second_lab
 
     - name: Build Docker image
-      uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
-      with:
-        context: .
-        file: ./Dockerfile
-        load: true
-        tags: ${{ steps.meta.outputs.tags }}
+      run: docker build . --file Dockerfile --tag ${{ steps.meta.outputs.tags }}
 
     - name: Run Docker container
-      run: docker run -d --name testcontainer ${{ steps.meta.outputs.tags }}
-
-    # - name: Run unit tests in Docker container
-    #   run: docker exec testcontainer python -m unittest discover -s tests
+      run: |
+        docker run -d --name testcontainer ${{ steps.meta.outputs.tags }}     
 
     - name: Run unit tests
-      run: docker exec testcontainer python -m unittest tests/test_app.py
+      run: |
+        docker exec testcontainer python -m unittest tests/test_app.py
 
-    # - name: Run integration tests
-    #   run: docker exec testcontainer python -m unittest tests/integration_test.py
+    - name: Run integration tests
+      run: |
+        docker exec testcontainer python tests/integration_test.py
 
-    - name: Push Docker image to DockerHub
-      if: success()
-      uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
-      with:
-        context: .
-        file: ./Dockerfile
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+    - name: Remove Docker container
+      run: docker rm -f testcontainer
+
+    - name: Push Docker image
+      run: docker push ${{ steps.meta.outputs.tags }}

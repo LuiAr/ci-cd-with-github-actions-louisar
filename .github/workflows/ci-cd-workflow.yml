@@ -26,7 +26,7 @@ jobs:
         images: luiar/lab_dockerhub_deployment
 
     - name: Build Docker image
-      run: docker build -t luiar/lab_dockerhub_deployment:${{ steps.meta.outputs.tags }} .
+      run: docker build -t luiar/lab_dockerhub_deployment:latest .
 
     - name: Run Docker container
       run: docker run -d -p 5000:5000 --name lab_dockerhub_deployment luiar/lab_dockerhub_deployment:${{ steps.meta.outputs.tags }}

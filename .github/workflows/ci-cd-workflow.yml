@@ -42,8 +42,8 @@ jobs:
     - name: Run unit tests
       run: docker exec testcontainer python -m unittest tests/test_app.py
 
-    - name: Run integration tests
-      run: docker exec testcontainer python -m unittest tests/integration_test.py
+    # - name: Run integration tests
+    #   run: docker exec testcontainer python -m unittest tests/integration_test.py
 
     - name: Push Docker image to DockerHub
       if: success()

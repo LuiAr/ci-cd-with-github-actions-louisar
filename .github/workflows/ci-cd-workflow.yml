@@ -34,8 +34,7 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
 
     - name: Run Docker container
-      run: docker run -d --name testcontainer luiar/second_lab:${{ steps.meta.outputs.tags }}
-
+      run: docker run -d --name testcontainer luiar/second_lab:latest
 
     - name: Run unit tests in Docker container
       run: docker exec testcontainer python -m unittest discover -s tests
